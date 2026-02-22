@@ -18,9 +18,9 @@ local Usagi = {
         Background = Color3.fromRGB(245, 240, 210), -- Muted Cream
         Sidebar = Color3.fromRGB(235, 230, 200),
         Accent = Color3.fromRGB(235, 155, 170), -- Muted Pink
-        Text = Color3.fromRGB(55, 35, 30), -- Deep Brown
-        SecondaryText = Color3.fromRGB(90, 75, 70),
-        Outline = Color3.fromRGB(55, 35, 30),
+        Text = Color3.fromRGB(40, 40, 45), -- Charcoal Gray
+        SecondaryText = Color3.fromRGB(75, 75, 80), -- Muted Charcoal
+        Outline = Color3.fromRGB(40, 40, 45),
         ElementBackground = Color3.fromRGB(240, 230, 200),
         ElementHover = Color3.fromRGB(230, 220, 190)
     }
@@ -160,54 +160,55 @@ function Usagi:Loader(Config)
     local FillTween = TweenService:Create(BarFill, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
     FillTween:Play()
     FillTween.Completed:Wait()
-    task.wait(0.4)
+    task.wait(0.5)
     
-    -- CUSTOM SPLIT-EXIT ANIMATION
-    -- Logo goes UP
-    TweenService:Create(Logo, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0.5, -60, -0.6, 0),
+    -- SEAMLESS SPLIT ANIMATION
+    Title.Visible = false
+    local function CreatePiece(isBottom)
+        local Piece = Instance.new("CanvasGroup")
+        Piece.Size = UDim2.new(1, 0, 0, 25)
+        Piece.Position = UDim2.new(0, 0, 0.75, isBottom and 25 or 0)
+        Piece.BackgroundTransparency = 1
+        Piece.ClipsDescendants = true
+        Piece.Parent = Content
+        
+        local PieceText = Title:Clone()
+        PieceText.Visible = true
+        PieceText.Position = UDim2.new(0, 0, isBottom and -0.5 or 0.5, 0) -- Adjusted for perfect alignment
+        if isBottom then PieceText.Position = UDim2.new(0, 0, -0.5, 0) else PieceText.Position = UDim2.new(0, 0, 0, 0) end
+        PieceText.Parent = Piece
+        return Piece
+    end
+    
+    local Upper = CreatePiece(false)
+    local Lower = CreatePiece(true)
+    
+    -- Logo flies UP
+    TweenService:Create(Logo, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.5, -60, -0.8, 0),
         ImageTransparency = 1
     }):Play()
     
-    -- Split Text Effect
-    Title.Visible = false
-    local function CreateHalf(bottom)
-        local Half = Instance.new("CanvasGroup")
-        Half.Size = UDim2.new(1, 0, 0, 25)
-        Half.Position = UDim2.new(0, 0, 0.75, bottom and 25 or 0)
-        Half.BackgroundTransparency = 1
-        Half.ClipsDescendants = true
-        Half.Parent = Content
-        
-        local Clone = Title:Clone()
-        Clone.Visible = true
-        Clone.Position = UDim2.new(0, 0, bottom and -0.5 or 0, 0)
-        Clone.Parent = Half
-        return Half
-    end
-    
-    local Top = CreateHalf(false)
-    local Bottom = CreateHalf(true)
-    
-    TweenService:Create(Top, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0, -20, 1.5, 0),
+    -- Text pieces fly DOWN with rotation
+    TweenService:Create(Upper, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(-0.05, 0, 1.5, 0),
         Rotation = -15,
         GroupTransparency = 1
     }):Play()
     
-    TweenService:Create(Bottom, TweenInfo.new(1.1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0, 20, 1.6, 20),
-        Rotation = 15,
+    TweenService:Create(Lower, TweenInfo.new(0.9, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.05, 0, 1.6, 20),
+        Rotation = 10,
         GroupTransparency = 1
     }):Play()
-    
-    TweenService:Create(BarBackground, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0.1, 0, 1.5, 0),
+
+    TweenService:Create(BarBackground, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.1, 0, 1.8, 0),
         BackgroundTransparency = 1
     }):Play()
 
-    TweenService:Create(Main, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
-    task.wait(1.1)
+    TweenService:Create(Main, TweenInfo.new(0.8), {BackgroundTransparency = 1}):Play()
+    task.wait(1)
     ScreenGui:Destroy()
 end
 
@@ -294,11 +295,11 @@ function Usagi:CreateWindow(Config)
 
     local Container = Instance.new("Frame")
     Container.Name = "Container"
-    Container.Size = UDim2.new(1, -170, 1, -60)
-    Container.Position = UDim2.new(0, 160, 0, 50)
+    Container.Size = UDim2.new(1, -165, 1, -55)
+    Container.Position = UDim2.new(0, 162, 0, 52)
     Container.BackgroundTransparency = 1
     Container.BorderSizePixel = 0
-    Container.ZIndex = 10 -- BOOSTED ZINDEX
+    Container.ZIndex = 100 -- FORCED TOP
     Container.Parent = Main
     
     local TopBar = Instance.new("Frame")
@@ -306,7 +307,7 @@ function Usagi:CreateWindow(Config)
     TopBar.Size = UDim2.new(1, -160, 0, 40)
     TopBar.Position = UDim2.new(0, 160, 0, 0)
     TopBar.BackgroundTransparency = 1
-    TopBar.ZIndex = 11
+    TopBar.ZIndex = 110
     TopBar.Parent = Main
 
     AddDrag(Main, Sidebar)
@@ -363,19 +364,22 @@ function Usagi:CreateWindow(Config)
         Page.Parent = Container
         
         local Content = Instance.new("Frame")
-        Content.Size = UDim2.new(1, -10, 0, 0)
-        Content.Position = UDim2.new(0, 5, 0, 0)
+        Content.Size = UDim2.new(1, -20, 0, 0)
+        Content.Position = UDim2.new(0, 10, 0, 0)
         Content.BackgroundTransparency = 1
         Content.AutomaticSize = Enum.AutomaticSize.Y
+        Content.ZIndex = 105
         Content.Parent = Page
         
         local PageList = Instance.new("UIListLayout")
-        PageList.Padding = UDim.new(0, 8)
+        PageList.Padding = UDim.new(0, 10)
         PageList.Parent = Content
         
-        PageList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            Page.CanvasSize = UDim2.new(0, 0, 0, PageList.AbsoluteContentSize.Y + 10)
-        end)
+        local function UpdateSize()
+            Page.CanvasSize = UDim2.new(0, 0, 0, PageList.AbsoluteContentSize.Y + 20)
+        end
+        PageList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateSize)
+        task.spawn(UpdateSize) -- Initial call
 
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabButton then return end
