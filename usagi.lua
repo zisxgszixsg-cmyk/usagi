@@ -159,13 +159,29 @@ function Usagi:Loader(Config)
     task.wait(0.5)
     local FillTween = TweenService:Create(BarFill, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
     FillTween:Play()
-    
     FillTween.Completed:Wait()
-    task.wait(0.5)
+    task.wait(0.3)
     
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Content, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {GroupTransparency = 1}):Play()
-    task.wait(0.6)
+    -- CUSTOM EXIT ANIMATION
+    -- Logo goes UP
+    TweenService:Create(Logo, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.5, -60, -0.5, 0),
+        ImageTransparency = 1
+    }):Play()
+    
+    -- Text splits and goes DOWN
+    TweenService:Create(Title, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0, 0, 1.5, 0),
+        TextTransparency = 1
+    }):Play()
+    
+    TweenService:Create(BarBackground, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.1, 0, 1.2, 0),
+        BackgroundTransparency = 1
+    }):Play()
+
+    TweenService:Create(Main, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+    task.wait(0.7)
     ScreenGui:Destroy()
 end
 
@@ -253,16 +269,18 @@ function Usagi:CreateWindow(Config)
     local Container = Instance.new("Frame")
     Container.Name = "Container"
     Container.Size = UDim2.new(1, -170, 1, -60)
-    Container.Position = UDim2.new(0, 165, 0, 55)
+    Container.Position = UDim2.new(0, 160, 0, 50)
     Container.BackgroundTransparency = 1
     Container.BorderSizePixel = 0
-    Container.ZIndex = 2
+    Container.ZIndex = 5
     Container.Parent = Main
+    
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.Size = UDim2.new(1, -160, 0, 40)
     TopBar.Position = UDim2.new(0, 160, 0, 0)
     TopBar.BackgroundTransparency = 1
+    TopBar.ZIndex = 6
     TopBar.Parent = Main
 
     AddDrag(Main, Sidebar)
