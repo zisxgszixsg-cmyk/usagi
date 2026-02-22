@@ -935,7 +935,7 @@ function Usagi:Notify(Config)
     local Title = Config.Title or "Notification"
     local Content = Config.Content or "Successfully executed!"
     local Image = Config.Image or "rbxassetid://77102052458690"
-    local Sound = Config.Sound or 79918510646632 
+    local Sound = Config.Sound or 79918510646632
     local Duration = Config.Duration or 5
 
     local NotifyGui = CoreGui:FindFirstChild("UsagiNotify")
@@ -1021,7 +1021,6 @@ function Usagi:Notify(Config)
         end)
     end
 
-    -- Animation
     NotifyFrame.Position = UDim2.new(1, 10, 0, 0)
     TweenService:Create(NotifyFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
     
