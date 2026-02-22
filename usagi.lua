@@ -160,28 +160,54 @@ function Usagi:Loader(Config)
     local FillTween = TweenService:Create(BarFill, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
     FillTween:Play()
     FillTween.Completed:Wait()
-    task.wait(0.3)
+    task.wait(0.4)
     
-    -- CUSTOM EXIT ANIMATION
+    -- CUSTOM SPLIT-EXIT ANIMATION
     -- Logo goes UP
-    TweenService:Create(Logo, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0.5, -60, -0.5, 0),
+    TweenService:Create(Logo, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.5, -60, -0.6, 0),
         ImageTransparency = 1
     }):Play()
     
-    -- Text splits and goes DOWN
-    TweenService:Create(Title, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0, 0, 1.5, 0),
-        TextTransparency = 1
+    -- Split Text Effect
+    Title.Visible = false
+    local function CreateHalf(bottom)
+        local Half = Instance.new("CanvasGroup")
+        Half.Size = UDim2.new(1, 0, 0, 25)
+        Half.Position = UDim2.new(0, 0, 0.75, bottom and 25 or 0)
+        Half.BackgroundTransparency = 1
+        Half.ClipsDescendants = true
+        Half.Parent = Content
+        
+        local Clone = Title:Clone()
+        Clone.Visible = true
+        Clone.Position = UDim2.new(0, 0, bottom and -0.5 or 0, 0)
+        Clone.Parent = Half
+        return Half
+    end
+    
+    local Top = CreateHalf(false)
+    local Bottom = CreateHalf(true)
+    
+    TweenService:Create(Top, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0, -20, 1.5, 0),
+        Rotation = -15,
+        GroupTransparency = 1
     }):Play()
     
-    TweenService:Create(BarBackground, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-        Position = UDim2.new(0.1, 0, 1.2, 0),
+    TweenService:Create(Bottom, TweenInfo.new(1.1, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0, 20, 1.6, 20),
+        Rotation = 15,
+        GroupTransparency = 1
+    }):Play()
+    
+    TweenService:Create(BarBackground, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.1, 0, 1.5, 0),
         BackgroundTransparency = 1
     }):Play()
 
-    TweenService:Create(Main, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-    task.wait(0.7)
+    TweenService:Create(Main, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
+    task.wait(1.1)
     ScreenGui:Destroy()
 end
 
@@ -272,7 +298,7 @@ function Usagi:CreateWindow(Config)
     Container.Position = UDim2.new(0, 160, 0, 50)
     Container.BackgroundTransparency = 1
     Container.BorderSizePixel = 0
-    Container.ZIndex = 5
+    Container.ZIndex = 10 -- BOOSTED ZINDEX
     Container.Parent = Main
     
     local TopBar = Instance.new("Frame")
@@ -280,7 +306,7 @@ function Usagi:CreateWindow(Config)
     TopBar.Size = UDim2.new(1, -160, 0, 40)
     TopBar.Position = UDim2.new(0, 160, 0, 0)
     TopBar.BackgroundTransparency = 1
-    TopBar.ZIndex = 6
+    TopBar.ZIndex = 11
     TopBar.Parent = Main
 
     AddDrag(Main, Sidebar)
