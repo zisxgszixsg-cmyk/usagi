@@ -62,7 +62,7 @@ local function AddDrag(Frame, DragPart)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.05}):Play()
         end
-    end)
+    end) 
     DragPart.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0}):Play()
@@ -89,11 +89,11 @@ function Usagi:Loader(Config)
 
     local Main = Instance.new("Frame")
     Main.Size = UDim2.new(1, 0, 1, 0)
-    Main.BackgroundColor3 = self.Theme.Background
-    Main.BackgroundTransparency = 0
+    Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Main.BackgroundTransparency = 0.3
     Main.Parent = ScreenGui
 
-    local Content = Instance.new("Frame") -- Changed to Frame for better compatibility
+    local Content = Instance.new("CanvasGroup")
     Content.Size = UDim2.new(0, 400, 0, 300)
     Content.Position = UDim2.new(0.5, -200, 0.5, -150)
     Content.BackgroundTransparency = 1
@@ -107,6 +107,7 @@ function Usagi:Loader(Config)
     Title.Font = Enum.Font.FredokaOne
     Title.TextSize = 40
     Title.TextTransparency = 1
+    Title.BackgroundTransparency = 1
     Title.Parent = Content
 
     local LogoFrame = Instance.new("ImageLabel")
@@ -158,9 +159,9 @@ function Usagi:Loader(Config)
     FillTween.Completed:Wait()
     task.wait(0.5)
     
-    TweenService:Create(Main, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Content, TweenInfo.new(0.5), {GroupTransparency = 1}):Play()
-    task.wait(0.5)
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(Content, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {GroupTransparency = 1}):Play()
+    task.wait(0.6)
     ScreenGui:Destroy()
 end
 
@@ -251,8 +252,9 @@ function Usagi:CreateWindow(Config)
     
     -- Show/Hide Toggle
     local WindowVisible = true
+    local ToggleKey = Enum.KeyCode.LeftControl
     UserInputService.InputBegan:Connect(function(Input, Processed)
-        if not Processed and Input.KeyCode == Enum.KeyCode.LeftControl then
+        if not Processed and Input.KeyCode == ToggleKey then
             WindowVisible = not WindowVisible
             Main.Visible = WindowVisible
         end
@@ -262,6 +264,10 @@ function Usagi:CreateWindow(Config)
         Tabs = {},
         CurrentTab = nil
     }
+
+    function Window:SetToggleKey(Key)
+        ToggleKey = Key
+    end
 
     function Window:CreateTab(Name)
         local TabButton = Instance.new("TextButton")
@@ -344,16 +350,83 @@ function Usagi:CreateWindow(Config)
 
         function TabFeatures:AddLabel(Text)
             local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(1, 0, 0, 30)
+            Label.Size = UDim2.new(1, 0, 0, 20)
             Label.BackgroundTransparency = 1
             Label.Text = "  " .. Text
             Label.Font = Enum.Font.GothamBold
-            Label.TextSize = 14
-            Label.TextColor3 = Usagi.Theme.Text
+            Label.TextSize = 13
+            Label.TextColor3 = Usagi.Theme.SecondaryText
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.Parent = CanvasGroup
             
             return Label
+        end
+
+        function TabFeatures:AddSection(Text)
+            local SectionFrame = Instance.new("Frame")
+            SectionFrame.Size = UDim2.new(1, 0, 0, 30)
+            SectionFrame.BackgroundTransparency = 1
+            SectionFrame.Parent = CanvasGroup
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, 0, 1, 0)
+            Label.Position = UDim2.new(0, 0, 0, 0)
+            Label.Text = Text:upper()
+            Label.Font = Enum.Font.FredokaOne
+            Label.TextSize = 14
+            Label.TextColor3 = Usagi.Theme.Accent
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.BackgroundTransparency = 1
+            Label.Parent = SectionFrame
+
+            local Line = Instance.new("Frame")
+            Line.Size = UDim2.new(1, - (Label.TextBounds.X + 10), 0, 1)
+            Line.Position = UDim2.new(0, Label.TextBounds.X + 10, 0.5, 0)
+            Line.BackgroundColor3 = Usagi.Theme.Outline
+            Line.BackgroundTransparency = 0.5
+            Line.BorderSizePixel = 0
+            Line.Parent = SectionFrame
+            
+            return Label
+        end
+
+        function TabFeatures:AddParagraph(Title, Content)
+            local ParaFrame = Instance.new("Frame")
+            ParaFrame.Size = UDim2.new(1, 0, 0, 60)
+            ParaFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            ParaFrame.Parent = CanvasGroup
+            
+            local ParaCorner = Instance.new("UICorner")
+            ParaCorner.CornerRadius = UDim.new(0, 10)
+            ParaCorner.Parent = ParaFrame
+
+            local TitleLabel = Instance.new("TextLabel")
+            TitleLabel.Size = UDim2.new(1, -20, 0, 24)
+            TitleLabel.Position = UDim2.new(0, 10, 0, 5)
+            TitleLabel.Text = Title
+            TitleLabel.Font = Enum.Font.GothamBold
+            TitleLabel.TextSize = 14
+            TitleLabel.TextColor3 = Usagi.Theme.Text
+            TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            TitleLabel.BackgroundTransparency = 1
+            TitleLabel.Parent = ParaFrame
+
+            local ContentLabel = Instance.new("TextLabel")
+            ContentLabel.Size = UDim2.new(1, -20, 0, 0)
+            ContentLabel.Position = UDim2.new(0, 10, 0, 26)
+            ContentLabel.Text = Content
+            ContentLabel.Font = Enum.Font.Gotham
+            ContentLabel.TextSize = 13
+            ContentLabel.TextColor3 = Usagi.Theme.SecondaryText
+            ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ContentLabel.TextWrapped = true
+            ContentLabel.BackgroundTransparency = 1
+            ContentLabel.AutomaticSize = Enum.AutomaticSize.Y
+            ContentLabel.Parent = ParaFrame
+
+            ParaFrame.AutomaticSize = Enum.AutomaticSize.Y
+            
+            return ParaFrame
         end
 
         function TabFeatures:AddButton(Text, Callback)
@@ -458,8 +531,68 @@ function Usagi:CreateWindow(Config)
                 Set(not Toggled)
             end)
             
+        function TabFeatures:AddKeybind(Text, Default, Callback)
+            local BindFrame = Instance.new("Frame")
+            BindFrame.Size = UDim2.new(1, 0, 0, 44)
+            BindFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            BindFrame.Parent = CanvasGroup
+            
+            local BFCorner = Instance.new("UICorner")
+            BFCorner.CornerRadius = UDim.new(0, 10)
+            BFCorner.Parent = BindFrame
+            
+            local BFStroke = Instance.new("UIStroke")
+            BFStroke.Color = Usagi.Theme.Outline
+            BFStroke.Thickness = 1
+            BFStroke.Parent = BindFrame
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -80, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.Text = Text
+            Label.Font = Enum.Font.GothamSemibold
+            Label.TextSize = 14
+            Label.TextColor3 = Usagi.Theme.Text
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.BackgroundTransparency = 1
+            Label.Parent = BindFrame
+
+            local BindButton = Instance.new("TextButton")
+            BindButton.Size = UDim2.new(0, 60, 0, 24)
+            BindButton.Position = UDim2.new(1, -72, 0.5, -12)
+            BindButton.BackgroundColor3 = Usagi.Theme.ElementHover
+            BindButton.Text = Default.Name
+            BindButton.Font = Enum.Font.GothamBold
+            BindButton.TextSize = 12
+            BindButton.TextColor3 = Usagi.Theme.Accent
+            BindButton.Parent = BindFrame
+            
+            local BBCorner = Instance.new("UICorner")
+            BBCorner.CornerRadius = UDim.new(0, 6)
+            BBCorner.Parent = BindButton
+
+            local CurrentBind = Default
+            local Binding = false
+
+            BindButton.MouseButton1Click:Connect(function()
+                Binding = true
+                BindButton.Text = "..."
+            end)
+
+            UserInputService.InputBegan:Connect(function(Input)
+                if Binding and Input.UserInputType == Enum.UserInputType.Keyboard then
+                    Binding = false
+                    CurrentBind = Input.KeyCode
+                    BindButton.Text = CurrentBind.Name
+                    Callback(CurrentBind)
+                end
+            end)
+
             return {
-                Set = Set
+                Set = function(key)
+                    CurrentBind = key
+                    BindButton.Text = key.Name
+                end
             }
         end
 
@@ -543,6 +676,96 @@ function Usagi:CreateWindow(Config)
             UserInputService.InputChanged:Connect(function(Input)
                 if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then Update() end
             end)
+        end
+
+        function TabFeatures:AddColorPicker(Text, Default, Callback)
+            local PickerFrame = Instance.new("Frame")
+            PickerFrame.Size = UDim2.new(1, 0, 0, 44)
+            PickerFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            PickerFrame.ClipsDescendants = true
+            PickerFrame.Parent = CanvasGroup
+            
+            local PFCorner = Instance.new("UICorner")
+            PFCorner.CornerRadius = UDim.new(0, 10)
+            PFCorner.Parent = PickerFrame
+            
+            local PFStroke = Instance.new("UIStroke")
+            PFStroke.Color = Usagi.Theme.Outline
+            PFStroke.Thickness = 1
+            PFStroke.Parent = PickerFrame
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -60, 0, 44)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.Text = Text
+            Label.Font = Enum.Font.GothamSemibold
+            Label.TextSize = 14
+            Label.TextColor3 = Usagi.Theme.Text
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.BackgroundTransparency = 1
+            Label.Parent = PickerFrame
+
+            local Display = Instance.new("Frame")
+            Display.Size = UDim2.new(0, 24, 0, 24)
+            Display.Position = UDim2.new(1, -36, 0.5, -12)
+            Display.BackgroundColor3 = Default
+            Display.Parent = PickerFrame
+            
+            local DCorner = Instance.new("UICorner")
+            DCorner.CornerRadius = UDim.new(0, 6)
+            DCorner.Parent = Display
+
+            local Container = Instance.new("Frame")
+            Container.Size = UDim2.new(1, -20, 0, 60)
+            Container.Position = UDim2.new(0, 10, 0, 44)
+            Container.BackgroundTransparency = 1
+            Container.Parent = PickerFrame
+            
+            local Grid = Instance.new("UIGridLayout")
+            Grid.CellSize = UDim2.new(0, 25, 0, 25)
+            Grid.CellPadding = UDim2.new(0, 5, 0, 5)
+            Grid.Parent = Container
+
+            local Colors = {
+                Color3.fromRGB(235, 155, 170), -- Muted Pink
+                Color3.fromRGB(155, 190, 235), -- Muted Blue
+                Color3.fromRGB(160, 235, 155), -- Muted Green
+                Color3.fromRGB(235, 210, 155), -- Gold
+                Color3.fromRGB(235, 155, 155), -- Pastel Red
+                Color3.fromRGB(170, 155, 235), -- Pastel Purple
+                Color3.fromRGB(255, 255, 255), -- White
+                Color3.fromRGB(40, 40, 40) -- Dark
+            }
+
+            local Open = false
+            local function Toggle(state)
+                Open = state
+                local TargetHeight = Open and 120 or 44
+                TweenService:Create(PickerFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
+            end
+
+            for _, color in pairs(Colors) do
+                local cBtn = Instance.new("TextButton")
+                cBtn.Size = UDim2.new(1, 0, 1, 0)
+                cBtn.BackgroundColor3 = color
+                cBtn.Text = ""
+                cBtn.Parent = Container
+                Instance.new("UICorner", cBtn).CornerRadius = UDim.new(0, 4)
+                
+                cBtn.MouseButton1Click:Connect(function()
+                    Display.BackgroundColor3 = color
+                    Callback(color)
+                    Toggle(false)
+                end)
+            end
+
+            Label.InputBegan:Connect(function(Input)
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    Toggle(not Open)
+                end
+            end)
+            
+            return PickerFrame
         end
 
         function TabFeatures:AddTextBox(Text, Callback)
