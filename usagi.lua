@@ -439,7 +439,9 @@ function Usagi:CreateWindow(Config)
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.Parent = Content
             
-            return Label
+            local Proxy = {Instance = Label}
+            function Proxy:SetText(val) Label.Text = "  " .. tostring(val) end
+            return Proxy
         end
 
         function TabFeatures:AddSection(Text)
@@ -467,7 +469,9 @@ function Usagi:CreateWindow(Config)
             Line.BorderSizePixel = 0
             Line.Parent = Label
             
-            return Label
+            local Proxy = {Instance = SectionFrame}
+            function Proxy:SetText(val) Label.Text = tostring(val) end
+            return Proxy
         end
 
         function TabFeatures:AddParagraph(Title, BodyText)
@@ -1099,56 +1103,40 @@ function Usagi:CreateWindow(Config)
             Layout.Padding = UDim.new(0, 4)
             Layout.Parent = Scroll
             
-            for _, item in pairs(Items) do
-                local Btn = Instance.new("TextButton")
-                Btn.Size = UDim2.new(1, -5, 0, 28)
-                Btn.BackgroundColor3 = Usagi.Theme.ElementHover
-                Btn.Text = "  " .. tostring(item)
-                Btn.Font = Enum.Font.Gotham
-                Btn.TextSize = 13
-                Btn.TextColor3 = Usagi.Theme.Text
-                Btn.TextXAlignment = Enum.TextXAlignment.Left
-                Btn.Parent = Scroll
-                
-                local BCorner = Instance.new("UICorner")
-                BCorner.CornerRadius = UDim.new(0, 4)
-                BCorner.Parent = Btn
-                
-                Btn.MouseButton1Click:Connect(function()
-                    Callback(item)
-                end)
-            end
-            
-            Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
-            
-            -- Update Method
-            function ListFrame:Update(NewItems)
+            local function Refresh(NewItems)
                 for _, child in pairs(Scroll:GetChildren()) do
                     if child:IsA("TextButton") then child:Destroy() end
                 end
                 for _, item in pairs(NewItems) do
                     local Btn = Instance.new("TextButton")
-                    Btn.Size = UDim2.new(1, -10, 0, 30)
-                    Btn.BackgroundColor3 = Usagi.Theme.ElementBackground
-                    Btn.Text = tostring(item)
-                    Btn.TextColor3 = Usagi.Theme.Text
+                    Btn.Size = UDim2.new(1, -5, 0, 28)
+                    Btn.BackgroundColor3 = Usagi.Theme.ElementHover
+                    Btn.Text = "  " .. tostring(item)
                     Btn.Font = Enum.Font.Gotham
-                    Btn.TextSize = 14
+                    Btn.TextSize = 13
+                    Btn.TextColor3 = Usagi.Theme.Text
+                    Btn.TextXAlignment = Enum.TextXAlignment.Left
                     Btn.Parent = Scroll
-
-                    local Corner = Instance.new("UICorner")
-                    Corner.CornerRadius = UDim.new(0, 6)
-                    Corner.Parent = Btn
-
+                    
+                    local BCorner = Instance.new("UICorner")
+                    BCorner.CornerRadius = UDim.new(0, 4)
+                    BCorner.Parent = Btn
+                    
                     Btn.MouseButton1Click:Connect(function()
                         Callback(item)
-                        Usagi:Notify({Title = "Selected", Content = item})
                     end)
                 end
-                Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
+                Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 5)
             end
 
-            return ListFrame
+            Refresh(Items)
+            
+            local Proxy = {Instance = ListFrame}
+            function Proxy:Update(NewItems)
+                Refresh(NewItems)
+            end
+
+            return Proxy
         end
 
         function TabFeatures:Show()
