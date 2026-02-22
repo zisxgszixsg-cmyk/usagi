@@ -531,6 +531,11 @@ function Usagi:CreateWindow(Config)
                 Set(not Toggled)
             end)
             
+            return {
+                Set = Set
+            }
+        end
+
         function TabFeatures:AddKeybind(Text, Default, Callback)
             local BindFrame = Instance.new("Frame")
             BindFrame.Size = UDim2.new(1, 0, 0, 44)
