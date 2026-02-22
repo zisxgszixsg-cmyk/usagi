@@ -81,7 +81,7 @@ function Usagi:Loader(Config)
     Main.BackgroundTransparency = 0
     Main.Parent = ScreenGui
 
-    local Content = Instance.new("Frame")
+    local Content = Instance.new("CanvasGroup")
     Content.Size = UDim2.new(0, 400, 0, 300)
     Content.Position = UDim2.new(0.5, -200, 0.5, -150)
     Content.BackgroundTransparency = 1
@@ -89,7 +89,7 @@ function Usagi:Loader(Config)
 
     local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, 0, 0, 50)
-    Title.Position = UDim2.new(0, 0, 0.7, 0)
+    Title.Position = UDim2.new(0, 0, 0.75, 0)
     Title.Text = Name
     Title.TextColor3 = self.Theme.Accent
     Title.Font = Enum.Font.FredokaOne
@@ -97,25 +97,27 @@ function Usagi:Loader(Config)
     Title.TextTransparency = 1
     Title.Parent = Content
 
-    local VideoFrame = Instance.new("ImageLabel")
-    VideoFrame.Size = UDim2.new(0, 180, 0, 180)
-    VideoFrame.Position = UDim2.new(0.5, -90, 0.2, -30)
-    VideoFrame.BackgroundTransparency = 1
-    VideoFrame.Image = CurrentAsset.Video
-    VideoFrame.ImageTransparency = 1
-    VideoFrame.Parent = Content
+    local LogoFrame = Instance.new("ImageLabel")
+    LogoFrame.Size = UDim2.new(0, 180, 0, 180)
+    LogoFrame.Position = UDim2.new(0.5, -90, 0.2, -30)
+    LogoFrame.BackgroundTransparency = 1
+    LogoFrame.Image = CurrentAsset.Video
+    LogoFrame.ImageTransparency = 1
+    LogoFrame.Parent = Content
     
     local VideoCorner = Instance.new("UICorner")
     VideoCorner.CornerRadius = UDim.new(1, 0)
-    VideoCorner.Parent = VideoFrame
+    VideoCorner.Parent = LogoFrame
 
-    -- Play Random Sound
-    local s = Instance.new("Sound")
-    s.SoundId = CurrentAsset.Sound
-    s.Volume = 2
-    s.Parent = CoreGui
-    s:Play()
-    s.Ended:Connect(function() s:Destroy() end)
+    -- Play Random Sound (With protection for unauthorized assets)
+    pcall(function()
+        local s = Instance.new("Sound")
+        s.SoundId = CurrentAsset.Sound
+        s.Volume = 2
+        s.Parent = CoreGui
+        s:Play()
+        s.Ended:Connect(function() s:Destroy() end)
+    end)
 
     local BarBackground = Instance.new("Frame")
     BarBackground.Size = UDim2.new(0.8, 0, 0, 6)
@@ -134,19 +136,19 @@ function Usagi:Loader(Config)
     local UICorner2 = UICorner:Clone()
     UICorner2.Parent = BarFill
 
-    TweenService:Create(VideoFrame, TweenInfo.new(1), {ImageTransparency = 0}):Play()
+    TweenService:Create(LogoFrame, TweenInfo.new(1), {ImageTransparency = 0}):Play()
     TweenService:Create(Title, TweenInfo.new(1), {TextTransparency = 0}):Play()
     
-    wait(0.5)
+    task.wait(0.5)
     local FillTween = TweenService:Create(BarFill, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
     FillTween:Play()
     
     FillTween.Completed:Wait()
-    wait(0.5)
+    task.wait(0.5)
     
     TweenService:Create(Main, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
     TweenService:Create(Content, TweenInfo.new(0.5), {GroupTransparency = 1}):Play()
-    wait(0.5)
+    task.wait(0.5)
     ScreenGui:Destroy()
 end
 
@@ -618,7 +620,7 @@ function Usagi:CreateWindow(Config)
 
             local function Toggle(State)
                 Dropdown.Open = State
-                local TargetHeight = State and (44 + Container.UIListLayout.AbsoluteContentSize.Y + 10) or 44
+                local TargetHeight = State and (44 + (Container:FindFirstChildOfClass("UIListLayout") and Container:FindFirstChildOfClass("UIListLayout").AbsoluteContentSize.Y or 0) + 10) or 44
                 TweenService:Create(DropFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
                 TweenService:Create(Icon, TweenInfo.new(0.3), {Rotation = State and 180 or 0}):Play()
             end
@@ -748,12 +750,18 @@ function Usagi:Notify(Config)
     ContentLabel.Parent = NotifyFrame
 
     if Sound then
-        local s = Instance.new("Sound")
-        s.SoundId = "rbxassetid://" .. tostring(Sound):gsub("rbxassetid://", "")
-        s.Volume = 1
-        s.Parent = CoreGui
-        s:Play()
-        s.Ended:Connect(function() s:Destroy() end)
+        pcall(function()
+            local s = Instance.new("Sound")
+            local soundId = tostring(Sound)
+            if not soundId:find("rbxassetid://") then
+                soundId = "rbxassetid://" .. soundId
+            end
+            s.SoundId = soundId
+            s.Volume = 1
+            s.Parent = CoreGui
+            s:Play()
+            s.Ended:Connect(function() s:Destroy() end)
+        end)
     end
 
     -- Animation
