@@ -171,6 +171,7 @@ function Usagi:CreateWindow(Config)
 
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "UsagiLibrary"
+    ScreenGui.ResetOnSpawn = false -- Ensure it persists
     ScreenGui.Parent = CoreGui
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -215,13 +216,22 @@ function Usagi:CreateWindow(Config)
 
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, 0, 0, 50)
-    TitleLabel.Position = UDim2.new(0, 0, 0, 10)
+    TitleLabel.Position = UDim2.new(-1, 0, 0, 10) -- Start off-screen for animation
     TitleLabel.Text = Title
     TitleLabel.TextColor3 = self.Theme.Text
     TitleLabel.Font = Enum.Font.FredokaOne
     TitleLabel.TextSize = 24
+    TitleLabel.TextTransparency = 1 -- Start transparent
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Parent = Sidebar
+    
+    -- Title Slide-In Animation
+    task.delay(0.5, function()
+        TweenService:Create(TitleLabel, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0, 0, 0, 10),
+            TextTransparency = 0
+        }):Play()
+    end)
 
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
@@ -238,7 +248,11 @@ function Usagi:CreateWindow(Config)
 
     local Container = Instance.new("Frame")
     Container.Name = "Container"
-    Container.Size = UDim2.new(1, -180, 1, -20)
+    Container.Size = UDim2.new(1, -180, 1, -70)
+    Container.Position = UDim2.new(0, 170, 0, 60)
+    Container.BackgroundTransparency = 1
+    Container.BorderSizePixel = 0
+    Container.Parent = Main -- FIXED: Added parent
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.Size = UDim2.new(1, -160, 0, 40)
@@ -313,6 +327,13 @@ function Usagi:CreateWindow(Config)
 
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabButton then return end
+            
+            -- Click Animation
+            TweenService:Create(TabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -6, 0, 32)}):Play()
+            task.delay(0.2, function()
+                TweenService:Create(TabButton, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, 36)}):Play()
+            end)
+            
             Window.CurrentTab = TabButton
             
             for _, t in pairs(Window.Tabs) do
@@ -325,7 +346,12 @@ function Usagi:CreateWindow(Config)
             
             Page.Visible = true
             CanvasGroup.GroupTransparency = 1
-            TweenService:Create(CanvasGroup, TweenInfo.new(0.4), {GroupTransparency = 0}):Play()
+            CanvasGroup.Position = UDim2.new(0, 15, 0, 0)
+            
+            TweenService:Create(CanvasGroup, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                GroupTransparency = 0,
+                Position = UDim2.new(0, 5, 0, 0)
+            }):Play()
             
             TabButton.BackgroundColor3 = Usagi.Theme.Accent
             TabButton.UIStroke.Enabled = true
@@ -340,7 +366,7 @@ function Usagi:CreateWindow(Config)
         if #Window.Tabs == 1 then
             Page.Visible = true
             CanvasGroup.GroupTransparency = 0
-            TweenService:Create(CanvasGroup, TweenInfo.new(0.5), {GroupTransparency = 0}):Play()
+            CanvasGroup.Position = UDim2.new(0, 5, 0, 0)
             TabButton.BackgroundColor3 = Usagi.Theme.Accent
             TabButton.UIStroke.Enabled = true
             Window.CurrentTab = TabButton
@@ -1062,7 +1088,7 @@ function Usagi:Notify(Config)
         local Container = Instance.new("Frame")
         Container.Name = "NotifyContainer"
         Container.Size = UDim2.new(0, 300, 1, 0)
-        Container.Position = UDim2.new(1, -310, 0, 10)
+        Container.Position = UDim2.new(1, -310, 0, -100) -- Move it higher (negative Y offset)
         Container.BackgroundTransparency = 1
         Container.Parent = NotifyGui
         
