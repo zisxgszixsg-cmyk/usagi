@@ -97,6 +97,7 @@ function Usagi:Loader(Config)
     Content.Size = UDim2.new(0, 400, 0, 300)
     Content.Position = UDim2.new(0.5, -200, 0.5, -150)
     Content.BackgroundTransparency = 1
+    Content.GroupTransparency = 1 -- FADE IN START
     Content.Parent = Main
 
     local Title = Instance.new("TextLabel")
@@ -150,8 +151,9 @@ function Usagi:Loader(Config)
     UICorner2.Parent = BarFill
 
     -- Initial Fade In
-    TweenService:Create(Main, TweenInfo.new(0.8), {BackgroundTransparency = 0}):Play() -- Main frame fade in
-    TweenService:Create(Logo, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5, -60, 0.45, -60)}):Play() -- Logo tween
+    TweenService:Create(Main, TweenInfo.new(0.8), {BackgroundTransparency = 0.3}):Play()
+    TweenService:Create(Content, TweenInfo.new(0.8), {GroupTransparency = 0}):Play()
+    TweenService:Create(Logo, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5, -60, 0.45, -60)}):Play()
     TweenService:Create(Title, TweenInfo.new(1), {TextTransparency = 0}):Play()
     
     task.wait(0.5)
@@ -250,11 +252,12 @@ function Usagi:CreateWindow(Config)
 
     local Container = Instance.new("Frame")
     Container.Name = "Container"
-    Container.Size = UDim2.new(1, -180, 1, -70)
-    Container.Position = UDim2.new(0, 170, 0, 60)
+    Container.Size = UDim2.new(1, -170, 1, -60)
+    Container.Position = UDim2.new(0, 165, 0, 55)
     Container.BackgroundTransparency = 1
     Container.BorderSizePixel = 0
-    Container.Parent = Main -- FIXED: Added parent
+    Container.ZIndex = 2
+    Container.Parent = Main
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.Size = UDim2.new(1, -160, 0, 40)
@@ -315,8 +318,8 @@ function Usagi:CreateWindow(Config)
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Page.Parent = Container
         
-        local Content = Instance.new("Frame") -- REPLACED CanvasGroup to fix pixelation
-        Content.Size = UDim2.new(1, -10, 0, 0) -- Subtract for padding/scrollbar
+        local Content = Instance.new("Frame")
+        Content.Size = UDim2.new(1, -10, 0, 0)
         Content.Position = UDim2.new(0, 5, 0, 0)
         Content.BackgroundTransparency = 1
         Content.AutomaticSize = Enum.AutomaticSize.Y
@@ -324,7 +327,11 @@ function Usagi:CreateWindow(Config)
         
         local PageList = Instance.new("UIListLayout")
         PageList.Padding = UDim.new(0, 8)
-        PageList.Parent = Content -- Parented to new Content frame
+        PageList.Parent = Content
+        
+        PageList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            Page.CanvasSize = UDim2.new(0, 0, 0, PageList.AbsoluteContentSize.Y + 10)
+        end)
 
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabButton then return end
@@ -1125,19 +1132,21 @@ function Usagi:Notify(Config)
         NotifyGui = Instance.new("ScreenGui")
         NotifyGui.Name = "UsagiNotify"
         NotifyGui.Parent = CoreGui
+        NotifyGui.IgnoreGuiInset = true
     end
     
     local Container = NotifyGui:FindFirstChild("NotifyContainer")
     if not Container then
         Container = Instance.new("Frame")
         Container.Name = "NotifyContainer"
-        Container.Size = UDim2.new(0, 300, 1, 0)
-        Container.Position = UDim2.new(1, -310, 0, -100) -- Move it higher
+        Container.Size = UDim2.new(0, 300, 0, 500)
+        Container.Position = UDim2.new(1, -310, 0, 50) -- Visible Top Right
         Container.BackgroundTransparency = 1
         Container.Parent = NotifyGui
         
         local List = Instance.new("UIListLayout")
-        List.VerticalAlignment = Enum.VerticalAlignment.Bottom
+        List.VerticalAlignment = Enum.VerticalAlignment.Top
+        List.HorizontalAlignment = Enum.HorizontalAlignment.Right
         List.Padding = UDim.new(0, 10)
         List.Parent = Container
     end
