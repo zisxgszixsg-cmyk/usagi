@@ -20,6 +20,7 @@ local Usagi = {
         Accent = Color3.fromRGB(235, 155, 170), -- Muted Pink
         Text = Color3.fromRGB(40, 40, 45), -- Charcoal Gray
         SecondaryText = Color3.fromRGB(75, 75, 80), -- Muted Charcoal
+        TabActiveText = Color3.fromHex("383E42"), -- Anthracite
         Outline = Color3.fromRGB(40, 40, 45),
         ElementBackground = Color3.fromRGB(240, 230, 200),
         ElementHover = Color3.fromRGB(230, 220, 190)
@@ -334,6 +335,7 @@ function Usagi:CreateWindow(Config)
 
     function Window:CreateTab(Name)
         local TabButton = Instance.new("TextButton")
+        TabButton.Name = "TabButton" -- Added name for clarity
         TabButton.Size = UDim2.new(1, 0, 0, 36)
         TabButton.BackgroundColor3 = Usagi.Theme.ElementBackground
         TabButton.Text = Name
@@ -354,6 +356,7 @@ function Usagi:CreateWindow(Config)
         TBStroke.Parent = TabButton
 
         local Page = Instance.new("ScrollingFrame")
+        Page.Name = "TabPage" -- Added name for clarity
         Page.Size = UDim2.new(1, 0, 1, 0)
         Page.BackgroundTransparency = 1
         Page.Visible = false
@@ -364,6 +367,7 @@ function Usagi:CreateWindow(Config)
         Page.Parent = Container
         
         local Content = Instance.new("Frame")
+        Content.Name = "TabContent" -- Added name for clarity
         Content.Size = UDim2.new(1, -20, 0, 0)
         Content.Position = UDim2.new(0, 10, 0, 0)
         Content.BackgroundTransparency = 1
@@ -384,27 +388,24 @@ function Usagi:CreateWindow(Config)
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabButton then return end
             
-            -- Click Animation
-            TweenService:Create(TabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -6, 0, 32)}):Play()
-            task.delay(0.2, function()
-                TweenService:Create(TabButton, TweenInfo.new(0.4, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, 36)}):Play()
-            end)
-            
-            Window.CurrentTab = TabButton
-            
-            for _, t in pairs(Window.Tabs) do
-                if t.Button ~= TabButton then
-                    t.Page.Visible = false
-                    t.Button.BackgroundColor3 = Usagi.Theme.ElementBackground
-                    t.Button.UIStroke.Enabled = false
-                end
+            if Window.CurrentTab then
+                TweenService:Create(Window.CurrentTab, TweenInfo.new(0.3), {BackgroundColor3 = Usagi.Theme.ElementBackground}):Play()
+                Window.CurrentTab.UIStroke.Enabled = false
             end
             
-            Page.Visible = true
-            Content.BackgroundTransparency = 1
-            Content.Position = UDim2.new(0, 15, 0, 0)
+            Window.CurrentTab = TabButton
+            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundColor3 = Usagi.Theme.Accent}):Play()
+            TabButton.UIStroke.Enabled = true
             
+            for _, t in pairs(Window.Tabs) do
+                t.Page.Visible = (t.Button == TabButton)
+            end
+            
+            Content.Position = UDim2.new(0, 15, 0, 0)
             TweenService:Create(Content, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, 5, 0, 0)
+            }):Play()
+        end)
                 Position = UDim2.new(0, 5, 0, 0)
             }):Play()
             
@@ -1103,6 +1104,7 @@ function Usagi:CreateWindow(Config)
             Layout.Padding = UDim.new(0, 4)
             Layout.Parent = Scroll
             
+            local Selection = {}
             local function Refresh(NewItems)
                 for _, child in pairs(Scroll:GetChildren()) do
                     if child:IsA("TextButton") then child:Destroy() end
@@ -1110,11 +1112,11 @@ function Usagi:CreateWindow(Config)
                 for _, item in pairs(NewItems) do
                     local Btn = Instance.new("TextButton")
                     Btn.Size = UDim2.new(1, -5, 0, 28)
-                    Btn.BackgroundColor3 = Usagi.Theme.ElementHover
+                    Btn.BackgroundColor3 = Selection[item] and Usagi.Theme.Accent or Usagi.Theme.ElementHover
                     Btn.Text = "  " .. tostring(item)
                     Btn.Font = Enum.Font.Gotham
                     Btn.TextSize = 13
-                    Btn.TextColor3 = Usagi.Theme.Text
+                    Btn.TextColor3 = Selection[item] and Usagi.Theme.TabActiveText or Usagi.Theme.Text
                     Btn.TextXAlignment = Enum.TextXAlignment.Left
                     Btn.Parent = Scroll
                     
@@ -1123,7 +1125,10 @@ function Usagi:CreateWindow(Config)
                     BCorner.Parent = Btn
                     
                     Btn.MouseButton1Click:Connect(function()
-                        Callback(item)
+                        Selection[item] = not Selection[item]
+                        Btn.BackgroundColor3 = Selection[item] and Usagi.Theme.Accent or Usagi.Theme.ElementHover
+                        Btn.TextColor3 = Selection[item] and Usagi.Theme.TabActiveText or Usagi.Theme.Text
+                        Callback(item, Selection)
                     end)
                 end
                 Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 5)
