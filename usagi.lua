@@ -168,8 +168,6 @@ end
 -- Main Window
 function Usagi:CreateWindow(Config)
     local Title = Config.Name or "Usagi UI"
-    
-    self:Loader({Name = Title})
 
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "UsagiLibrary"
@@ -181,6 +179,7 @@ function Usagi:CreateWindow(Config)
     Main.Size = UDim2.new(0, 600, 0, 450)
     Main.Position = UDim2.new(0.5, -300, 0.5, -225)
     Main.BackgroundColor3 = self.Theme.Background
+    Main.BackgroundTransparency = 0.15 -- Semi-transparent
     Main.BorderSizePixel = 0
     Main.ClipsDescendants = true
     Main.Parent = ScreenGui
@@ -341,6 +340,7 @@ function Usagi:CreateWindow(Config)
         if #Window.Tabs == 1 then
             Page.Visible = true
             CanvasGroup.GroupTransparency = 0
+            TweenService:Create(CanvasGroup, TweenInfo.new(0.5), {GroupTransparency = 0}):Play()
             TabButton.BackgroundColor3 = Usagi.Theme.Accent
             TabButton.UIStroke.Enabled = true
             Window.CurrentTab = TabButton
@@ -909,14 +909,129 @@ function Usagi:CreateWindow(Config)
                 end)
             end
 
-            function Dropdown:Clear()
-                for _, v in pairs(Container:GetChildren()) do
-                    if v:IsA("TextButton") then v:Destroy() end
-                end
-                if Dropdown.Open then Toggle(false) end
-            end
-
             return Dropdown
+        end
+
+        function TabFeatures:AddInput(Text, Placeholder, Callback)
+            local InputFrame = Instance.new("Frame")
+            InputFrame.Size = UDim2.new(1, 0, 0, 44)
+            InputFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            InputFrame.Parent = CanvasGroup
+            
+            local IFCorner = Instance.new("UICorner")
+            IFCorner.CornerRadius = UDim.new(0, 10)
+            IFCorner.Parent = InputFrame
+            
+            local IFStroke = Instance.new("UIStroke")
+            IFStroke.Color = Usagi.Theme.Outline
+            IFStroke.Thickness = 1
+            IFStroke.Parent = InputFrame
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(0.4, 0, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.Text = Text
+            Label.Font = Enum.Font.GothamSemibold
+            Label.TextSize = 14
+            Label.TextColor3 = Usagi.Theme.Text
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.BackgroundTransparency = 1
+            Label.Parent = InputFrame
+
+            local Box = Instance.new("TextBox")
+            Box.Size = UDim2.new(0, 80, 0, 26)
+            Box.Position = UDim2.new(1, -110, 0.5, -13)
+            Box.BackgroundColor3 = Usagi.Theme.ElementHover
+            Box.Text = ""
+            Box.PlaceholderText = Placeholder or "..."
+            Box.Font = Enum.Font.Gotham
+            Box.TextSize = 13
+            Box.TextColor3 = Usagi.Theme.Text
+            Box.Parent = InputFrame
+            
+            local BCorner = Instance.new("UICorner")
+            BCorner.CornerRadius = UDim.new(0, 6)
+            BCorner.Parent = Box
+
+            local Go = Instance.new("TextButton")
+            Go.Size = UDim2.new(0, 30, 0, 26)
+            Go.Position = UDim2.new(1, -42, 0.5, -13)
+            Go.BackgroundColor3 = Usagi.Theme.Accent
+            Go.Text = "OK"
+            Go.Font = Enum.Font.GothamBold
+            Go.TextSize = 11
+            Go.TextColor3 = Usagi.Theme.Text
+            Go.Parent = InputFrame
+            
+            local GCorner = Instance.new("UICorner")
+            GCorner.CornerRadius = UDim.new(0, 6)
+            GCorner.Parent = Go
+
+            Go.MouseButton1Click:Connect(function()
+                Callback(Box.Text)
+                Box.Text = ""
+            end)
+
+            return InputFrame
+        end
+
+        function TabFeatures:AddListView(Text, Items, Callback)
+            local ListFrame = Instance.new("Frame")
+            ListFrame.Size = UDim2.new(1, 0, 0, 150)
+            ListFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            ListFrame.Parent = CanvasGroup
+            
+            local LFCorner = Instance.new("UICorner")
+            LFCorner.CornerRadius = UDim.new(0, 10)
+            LFCorner.Parent = ListFrame
+            
+            local Title = Instance.new("TextLabel")
+            Title.Size = UDim2.new(1, 0, 0, 30)
+            Title.Position = UDim2.new(0, 12, 0, 5)
+            Title.Text = Text
+            Title.Font = Enum.Font.FredokaOne
+            Title.TextSize = 14
+            Title.TextColor3 = Usagi.Theme.Accent
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.BackgroundTransparency = 1
+            Title.Parent = ListFrame
+
+            local Scroll = Instance.new("ScrollingFrame")
+            Scroll.Size = UDim2.new(1, -20, 1, -45)
+            Scroll.Position = UDim2.new(0, 10, 0, 35)
+            Scroll.BackgroundTransparency = 1
+            Scroll.BorderSizePixel = 0
+            Scroll.ScrollBarThickness = 2
+            Scroll.ScrollBarImageColor3 = Usagi.Theme.Accent
+            Scroll.Parent = ListFrame
+            
+            local Layout = Instance.new("UIListLayout")
+            Layout.Padding = UDim.new(0, 4)
+            Layout.Parent = Scroll
+            
+            for _, item in pairs(Items) do
+                local Btn = Instance.new("TextButton")
+                Btn.Size = UDim2.new(1, -5, 0, 28)
+                Btn.BackgroundColor3 = Usagi.Theme.ElementHover
+                Btn.Text = "  " .. tostring(item)
+                Btn.Font = Enum.Font.Gotham
+                Btn.TextSize = 13
+                Btn.TextColor3 = Usagi.Theme.Text
+                Btn.TextXAlignment = Enum.TextXAlignment.Left
+                Btn.Parent = Scroll
+                
+                local BCorner = Instance.new("UICorner")
+                BCorner.CornerRadius = UDim.new(0, 4)
+                BCorner.Parent = Btn
+                
+                Btn.MouseButton1Click:Connect(function()
+                    Callback(item)
+                end)
+            end
+            
+            Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
+            
+            return ListFrame
         end
 
         function TabFeatures:Show()
@@ -1021,13 +1136,23 @@ function Usagi:Notify(Config)
         end)
     end
 
-    NotifyFrame.Position = UDim2.new(1, 10, 0, 0)
-    TweenService:Create(NotifyFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+    -- Animation: Kinetic Arriving
+    NotifyFrame.Position = UDim2.new(1, 310, 0, 0)
+    NotifyFrame.GroupTransparency = 1
+    
+    local Arrival = TweenService:Create(NotifyFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0, 0, 0, 0),
+        GroupTransparency = 0
+    })
+    Arrival:Play()
     
     task.delay(Duration, function()
-        local t = TweenService:Create(NotifyFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 10, 0, 0)})
-        t:Play()
-        t.Completed:Wait()
+        local Exit = TweenService:Create(NotifyFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+            Position = UDim2.new(1, 310, 0, 0),
+            GroupTransparency = 1
+        })
+        Exit:Play()
+        Exit.Completed:Wait()
         NotifyFrame:Destroy()
     end)
 end
