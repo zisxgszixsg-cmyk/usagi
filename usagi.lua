@@ -110,17 +110,17 @@ function Usagi:Loader(Config)
     Title.BackgroundTransparency = 1
     Title.Parent = Content
 
-    local LogoFrame = Instance.new("ImageLabel")
-    LogoFrame.Size = UDim2.new(0, 180, 0, 180)
-    LogoFrame.Position = UDim2.new(0.5, -90, 0.2, -30)
-    LogoFrame.BackgroundTransparency = 1
-    LogoFrame.Image = CurrentAsset.Video
-    LogoFrame.ImageTransparency = 1
-    LogoFrame.Parent = Content
+    local Logo = Instance.new("ImageLabel") -- Changed from LogoFrame to Logo
+    Logo.Size = UDim2.new(0, 120, 0, 120) -- Updated size
+    Logo.Position = UDim2.new(0.5, -60, 0.4, -60) -- Updated position
+    Logo.BackgroundTransparency = 1
+    Logo.Image = Config.Icon or "rbxassetid://77102052458690" -- Default Logo, using Config.Icon
+    Logo.ImageTransparency = 1
+    Logo.Parent = Content -- Corrected parent to Content
     
     local VideoCorner = Instance.new("UICorner")
     VideoCorner.CornerRadius = UDim.new(1, 0)
-    VideoCorner.Parent = LogoFrame
+    VideoCorner.Parent = Logo -- Parented to new Logo
 
     -- Play Random Sound (With protection for unauthorized assets)
     pcall(function()
@@ -149,7 +149,9 @@ function Usagi:Loader(Config)
     local UICorner2 = UICorner:Clone()
     UICorner2.Parent = BarFill
 
-    TweenService:Create(LogoFrame, TweenInfo.new(1), {ImageTransparency = 0}):Play()
+    -- Initial Fade In
+    TweenService:Create(Main, TweenInfo.new(0.8), {BackgroundTransparency = 0}):Play() -- Main frame fade in
+    TweenService:Create(Logo, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5, -60, 0.45, -60)}):Play() -- Logo tween
     TweenService:Create(Title, TweenInfo.new(1), {TextTransparency = 0}):Play()
     
     task.wait(0.5)
@@ -313,17 +315,16 @@ function Usagi:CreateWindow(Config)
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Page.Parent = Container
         
-        local CanvasGroup = Instance.new("CanvasGroup")
-        CanvasGroup.Size = UDim2.new(1, -10, 0, 0) -- Subtract for padding/scrollbar
-        CanvasGroup.Position = UDim2.new(0, 5, 0, 0)
-        CanvasGroup.BackgroundTransparency = 1
-        CanvasGroup.GroupTransparency = 1
-        CanvasGroup.AutomaticSize = Enum.AutomaticSize.Y
-        CanvasGroup.Parent = Page
+        local Content = Instance.new("Frame") -- REPLACED CanvasGroup to fix pixelation
+        Content.Size = UDim2.new(1, -10, 0, 0) -- Subtract for padding/scrollbar
+        Content.Position = UDim2.new(0, 5, 0, 0)
+        Content.BackgroundTransparency = 1
+        Content.AutomaticSize = Enum.AutomaticSize.Y
+        Content.Parent = Page
         
         local PageList = Instance.new("UIListLayout")
         PageList.Padding = UDim.new(0, 8)
-        PageList.Parent = CanvasGroup
+        PageList.Parent = Content -- Parented to new Content frame
 
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabButton then return end
@@ -345,11 +346,10 @@ function Usagi:CreateWindow(Config)
             end
             
             Page.Visible = true
-            CanvasGroup.GroupTransparency = 1
-            CanvasGroup.Position = UDim2.new(0, 15, 0, 0)
+            Content.BackgroundTransparency = 1
+            Content.Position = UDim2.new(0, 15, 0, 0)
             
-            TweenService:Create(CanvasGroup, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                GroupTransparency = 0,
+            TweenService:Create(Content, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 Position = UDim2.new(0, 5, 0, 0)
             }):Play()
             
@@ -365,8 +365,7 @@ function Usagi:CreateWindow(Config)
 
         if #Window.Tabs == 1 then
             Page.Visible = true
-            CanvasGroup.GroupTransparency = 0
-            CanvasGroup.Position = UDim2.new(0, 5, 0, 0)
+            Content.Position = UDim2.new(0, 5, 0, 0)
             TabButton.BackgroundColor3 = Usagi.Theme.Accent
             TabButton.UIStroke.Enabled = true
             Window.CurrentTab = TabButton
@@ -406,12 +405,12 @@ function Usagi:CreateWindow(Config)
             Label.Parent = SectionFrame
 
             local Line = Instance.new("Frame")
-            Line.Size = UDim2.new(1, - (Label.TextBounds.X + 10), 0, 1)
-            Line.Position = UDim2.new(0, Label.TextBounds.X + 10, 0.5, 0)
-            Line.BackgroundColor3 = Usagi.Theme.Outline
+            Line.Size = UDim2.new(1, 0, 0, 1)
+            Line.Position = UDim2.new(0, 0, 1, 2) -- Move line below text
+            Line.BackgroundColor3 = Usagi.Theme.Accent
             Line.BackgroundTransparency = 0.5
             Line.BorderSizePixel = 0
-            Line.Parent = SectionFrame
+            Line.Parent = Label
             
             return Label
         end
@@ -420,7 +419,7 @@ function Usagi:CreateWindow(Config)
             local ParaFrame = Instance.new("Frame")
             ParaFrame.Size = UDim2.new(1, 0, 0, 60)
             ParaFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            ParaFrame.Parent = CanvasGroup
+            ParaFrame.Parent = Content
             
             local ParaCorner = Instance.new("UICorner")
             ParaCorner.CornerRadius = UDim.new(0, 10)
@@ -465,7 +464,7 @@ function Usagi:CreateWindow(Config)
             Button.TextColor3 = Usagi.Theme.Text
             Button.TextXAlignment = Enum.TextXAlignment.Left
             Button.AutoButtonColor = false
-            Button.Parent = CanvasGroup
+            Button.Parent = Content
             
             local BCorner = Instance.new("UICorner")
             BCorner.CornerRadius = UDim.new(0, 10)
@@ -497,7 +496,7 @@ function Usagi:CreateWindow(Config)
             local ToggleFrame = Instance.new("Frame")
             ToggleFrame.Size = UDim2.new(1, 0, 0, 44)
             ToggleFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            ToggleFrame.Parent = CanvasGroup
+            ToggleFrame.Parent = Content
             
             local TFCorner = Instance.new("UICorner")
             TFCorner.CornerRadius = UDim.new(0, 10)
@@ -566,7 +565,7 @@ function Usagi:CreateWindow(Config)
             local BindFrame = Instance.new("Frame")
             BindFrame.Size = UDim2.new(1, 0, 0, 44)
             BindFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            BindFrame.Parent = CanvasGroup
+            BindFrame.Parent = Content
             
             local BFCorner = Instance.new("UICorner")
             BFCorner.CornerRadius = UDim.new(0, 10)
@@ -631,7 +630,7 @@ function Usagi:CreateWindow(Config)
             local SliderFrame = Instance.new("Frame")
             SliderFrame.Size = UDim2.new(1, 0, 0, 60)
             SliderFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            SliderFrame.Parent = CanvasGroup
+            SliderFrame.Parent = Content
             
             local SFCorner = Instance.new("UICorner")
             SFCorner.CornerRadius = UDim.new(0, 10)
@@ -714,7 +713,7 @@ function Usagi:CreateWindow(Config)
             PickerFrame.Size = UDim2.new(1, 0, 0, 44)
             PickerFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
             PickerFrame.ClipsDescendants = true
-            PickerFrame.Parent = CanvasGroup
+            PickerFrame.Parent = Content
             
             local PFCorner = Instance.new("UICorner")
             PFCorner.CornerRadius = UDim.new(0, 10)
@@ -803,7 +802,7 @@ function Usagi:CreateWindow(Config)
             local BoxFrame = Instance.new("Frame")
             BoxFrame.Size = UDim2.new(1, 0, 0, 44)
             BoxFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            BoxFrame.Parent = CanvasGroup
+            BoxFrame.Parent = Content
             
             local BCorner = Instance.new("UICorner")
             BCorner.CornerRadius = UDim.new(0, 10)
@@ -861,7 +860,7 @@ function Usagi:CreateWindow(Config)
             DropFrame.Size = UDim2.new(1, 0, 0, 44)
             DropFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
             DropFrame.ClipsDescendants = true
-            DropFrame.Parent = CanvasGroup
+            DropFrame.Parent = Content
             
             local DCorner = Instance.new("UICorner")
             DCorner.CornerRadius = UDim.new(0, 10)
@@ -935,6 +934,16 @@ function Usagi:CreateWindow(Config)
                 end)
             end
 
+            function Dropdown:Update(NewItems)
+                for _, child in pairs(Container:GetChildren()) do
+                    if child:IsA("TextButton") then child:Destroy() end
+                end
+                for _, item in pairs(NewItems) do
+                    self:Add(item)
+                end
+                Toggle(false) -- Close dropdown after update
+            end
+
             return Dropdown
         end
 
@@ -942,7 +951,7 @@ function Usagi:CreateWindow(Config)
             local InputFrame = Instance.new("Frame")
             InputFrame.Size = UDim2.new(1, 0, 0, 44)
             InputFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            InputFrame.Parent = CanvasGroup
+            InputFrame.Parent = Content
             
             local IFCorner = Instance.new("UICorner")
             IFCorner.CornerRadius = UDim.new(0, 10)
@@ -1005,7 +1014,7 @@ function Usagi:CreateWindow(Config)
             local ListFrame = Instance.new("Frame")
             ListFrame.Size = UDim2.new(1, 0, 0, 150)
             ListFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
-            ListFrame.Parent = CanvasGroup
+            ListFrame.Parent = Content
             
             local LFCorner = Instance.new("UICorner")
             LFCorner.CornerRadius = UDim.new(0, 10)
@@ -1057,6 +1066,33 @@ function Usagi:CreateWindow(Config)
             
             Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
             
+            -- Update Method
+            function ListFrame:Update(NewItems)
+                for _, child in pairs(Scroll:GetChildren()) do
+                    if child:IsA("TextButton") then child:Destroy() end
+                end
+                for _, item in pairs(NewItems) do
+                    local Btn = Instance.new("TextButton")
+                    Btn.Size = UDim2.new(1, -10, 0, 30)
+                    Btn.BackgroundColor3 = Usagi.Theme.ElementBackground
+                    Btn.Text = tostring(item)
+                    Btn.TextColor3 = Usagi.Theme.Text
+                    Btn.Font = Usagi.Theme.Font
+                    Btn.TextSize = 14
+                    Btn.Parent = Scroll
+
+                    local Corner = Instance.new("UICorner")
+                    Corner.CornerRadius = UDim.new(0, 6)
+                    Corner.Parent = Btn
+
+                    Btn.MouseButton1Click:Connect(function()
+                        Callback(item)
+                        Usagi:Notify({Title = "Selected", Content = item})
+                    end)
+                end
+                Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
+            end
+
             return ListFrame
         end
 
@@ -1173,13 +1209,14 @@ function Usagi:Notify(Config)
     Arrival:Play()
     
     task.delay(Duration, function()
-        local Exit = TweenService:Create(NotifyFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+        local Exit = TweenService:Create(NotifyFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
             Position = UDim2.new(1, 310, 0, 0),
             GroupTransparency = 1
         })
         Exit:Play()
-        Exit.Completed:Wait()
-        NotifyFrame:Destroy()
+        Exit.Completed:Connect(function()
+            NotifyFrame:Destroy()
+        end)
     end)
 end
 
