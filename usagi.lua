@@ -77,8 +77,8 @@ function Usagi:Loader(Config)
     -- Pick random configuration (1 or 2)
     local ConfigIndex = math.random(1, 2)
     local Assets = {
-        [1] = { Video = "rbxassetid://77102052458690", Sound = "rbxassetid://130981886816527" }, 
-        [2] = { Video = "rbxassetid://77102052458690", Sound = "rbxassetid://123263136059897" }  
+        [1] = { Video = "rbxassetid://109406620346350", Sound = "rbxassetid://130981886816527" }, 
+        [2] = { Video = "rbxassetid://109406620346350", Sound = "rbxassetid://123263136059897" }  
     }
     local CurrentAsset = Assets[ConfigIndex]
 
@@ -114,7 +114,7 @@ function Usagi:Loader(Config)
     Logo.Size = UDim2.new(0, 120, 0, 120) -- Updated size
     Logo.Position = UDim2.new(0.5, -60, 0.4, -60) -- Updated position
     Logo.BackgroundTransparency = 1
-    Logo.Image = Config.Icon or "rbxassetid://77102052458690" -- Default Logo, using Config.Icon
+    Logo.Image = Config.Icon or "rbxassetid://109406620346350" -- Default Logo, using Config.Icon
     Logo.ImageTransparency = 1
     Logo.Parent = Content -- Corrected parent to Content
     
@@ -382,7 +382,7 @@ function Usagi:CreateWindow(Config)
             Label.TextSize = 13
             Label.TextColor3 = Usagi.Theme.SecondaryText
             Label.TextXAlignment = Enum.TextXAlignment.Left
-            Label.Parent = CanvasGroup
+            Label.Parent = Content
             
             return Label
         end
@@ -391,7 +391,7 @@ function Usagi:CreateWindow(Config)
             local SectionFrame = Instance.new("Frame")
             SectionFrame.Size = UDim2.new(1, 0, 0, 30)
             SectionFrame.BackgroundTransparency = 1
-            SectionFrame.Parent = CanvasGroup
+            SectionFrame.Parent = Content
 
             local Label = Instance.new("TextLabel")
             Label.Size = UDim2.new(1, 0, 1, 0)
@@ -415,7 +415,7 @@ function Usagi:CreateWindow(Config)
             return Label
         end
 
-        function TabFeatures:AddParagraph(Title, Content)
+        function TabFeatures:AddParagraph(Title, BodyText)
             local ParaFrame = Instance.new("Frame")
             ParaFrame.Size = UDim2.new(1, 0, 0, 60)
             ParaFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
@@ -439,7 +439,7 @@ function Usagi:CreateWindow(Config)
             local ContentLabel = Instance.new("TextLabel")
             ContentLabel.Size = UDim2.new(1, -20, 0, 0)
             ContentLabel.Position = UDim2.new(0, 10, 0, 26)
-            ContentLabel.Text = Content
+            ContentLabel.Text = BodyText
             ContentLabel.Font = Enum.Font.Gotham
             ContentLabel.TextSize = 13
             ContentLabel.TextColor3 = Usagi.Theme.SecondaryText
@@ -886,7 +886,7 @@ function Usagi:CreateWindow(Config)
             Icon.Size = UDim2.new(0, 20, 0, 20)
             Icon.Position = UDim2.new(1, -30, 0, 12)
             Icon.BackgroundTransparency = 1
-            Icon.Image = "rbxassetid://6031091000"
+            Icon.Image = "rbxassetid://109406620346350"
             Icon.ImageColor3 = Usagi.Theme.Text
             Icon.Parent = DropFrame
 
@@ -1077,7 +1077,7 @@ function Usagi:CreateWindow(Config)
                     Btn.BackgroundColor3 = Usagi.Theme.ElementBackground
                     Btn.Text = tostring(item)
                     Btn.TextColor3 = Usagi.Theme.Text
-                    Btn.Font = Usagi.Theme.Font
+                    Btn.Font = Enum.Font.Gotham
                     Btn.TextSize = 14
                     Btn.Parent = Scroll
 
@@ -1099,6 +1099,11 @@ function Usagi:CreateWindow(Config)
         function TabFeatures:Show()
             for _, t in pairs(Window.Tabs) do t.Page.Visible = false end
             Page.Visible = true
+            
+            Content.Position = UDim2.new(0, 15, 0, 0)
+            TweenService:Create(Content, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, 5, 0, 0)
+            }):Play()
         end
 
         return TabFeatures
@@ -1111,7 +1116,7 @@ end
 function Usagi:Notify(Config)
     local Title = Config.Title or "Notification"
     local Content = Config.Content or "Successfully executed!"
-    local Image = Config.Image or "rbxassetid://77102052458690"
+    local Image = Config.Image or "rbxassetid://109406620346350"
     local Sound = Config.Sound or 79918510646632
     local Duration = Config.Duration or 5
 
@@ -1120,11 +1125,14 @@ function Usagi:Notify(Config)
         NotifyGui = Instance.new("ScreenGui")
         NotifyGui.Name = "UsagiNotify"
         NotifyGui.Parent = CoreGui
-        
-        local Container = Instance.new("Frame")
+    end
+    
+    local Container = NotifyGui:FindFirstChild("NotifyContainer")
+    if not Container then
+        Container = Instance.new("Frame")
         Container.Name = "NotifyContainer"
         Container.Size = UDim2.new(0, 300, 1, 0)
-        Container.Position = UDim2.new(1, -310, 0, -100) -- Move it higher (negative Y offset)
+        Container.Position = UDim2.new(1, -310, 0, -100) -- Move it higher
         Container.BackgroundTransparency = 1
         Container.Parent = NotifyGui
         
@@ -1134,7 +1142,7 @@ function Usagi:Notify(Config)
         List.Parent = Container
     end
 
-    local NotifyFrame = Instance.new("Frame")
+    local NotifyFrame = Instance.new("CanvasGroup")
     NotifyFrame.Size = UDim2.new(1, 0, 0, 80)
     NotifyFrame.BackgroundColor3 = self.Theme.Background
     NotifyFrame.BackgroundTransparency = 0.1
