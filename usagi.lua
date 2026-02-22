@@ -15,14 +15,14 @@ local LocalPlayer = Players.LocalPlayer
 local Usagi = {
     Flags = {},
     Theme = {
-        Background = Color3.fromRGB(255, 249, 215), -- Cream
-        Sidebar = Color3.fromRGB(255, 245, 200),
-        Accent = Color3.fromRGB(249, 168, 182), -- Pink
-        Text = Color3.fromRGB(62, 39, 35), -- Dark Brown
-        SecondaryText = Color3.fromRGB(100, 80, 75),
-        Outline = Color3.fromRGB(62, 39, 35),
-        ElementBackground = Color3.fromRGB(249, 239, 205),
-        ElementHover = Color3.fromRGB(245, 225, 185)
+        Background = Color3.fromRGB(245, 240, 210), -- Muted Cream
+        Sidebar = Color3.fromRGB(235, 230, 200),
+        Accent = Color3.fromRGB(235, 155, 170), -- Muted Pink
+        Text = Color3.fromRGB(55, 35, 30), -- Deep Brown
+        SecondaryText = Color3.fromRGB(90, 75, 70),
+        Outline = Color3.fromRGB(55, 35, 30),
+        ElementBackground = Color3.fromRGB(240, 230, 200),
+        ElementHover = Color3.fromRGB(230, 220, 190)
     }
 }
 
@@ -56,6 +56,18 @@ local function AddDrag(Frame, DragPart)
     UserInputService.InputChanged:Connect(function(Input)
         if Input == DragInput and Dragging then Update(Input) end
     end)
+    
+    -- Visual Feedback on Drag Start
+    DragPart.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0.05}):Play()
+        end
+    end)
+    DragPart.InputEnded:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {BackgroundTransparency = 0}):Play()
+        end
+    end)
 end
 
 -- Loader / Splash Screen
@@ -77,11 +89,11 @@ function Usagi:Loader(Config)
 
     local Main = Instance.new("Frame")
     Main.Size = UDim2.new(1, 0, 1, 0)
-    Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Main.BackgroundColor3 = self.Theme.Background
     Main.BackgroundTransparency = 0
     Main.Parent = ScreenGui
 
-    local Content = Instance.new("CanvasGroup")
+    local Content = Instance.new("Frame") -- Changed to Frame for better compatibility
     Content.Size = UDim2.new(0, 400, 0, 300)
     Content.Position = UDim2.new(0.5, -200, 0.5, -150)
     Content.BackgroundTransparency = 1
@@ -227,11 +239,24 @@ function Usagi:CreateWindow(Config)
     local Container = Instance.new("Frame")
     Container.Name = "Container"
     Container.Size = UDim2.new(1, -180, 1, -20)
-    Container.Position = UDim2.new(0, 170, 0, 10)
-    Container.BackgroundTransparency = 1
-    Container.Parent = Main
+    local TopBar = Instance.new("Frame")
+    TopBar.Name = "TopBar"
+    TopBar.Size = UDim2.new(1, -160, 0, 40)
+    TopBar.Position = UDim2.new(0, 160, 0, 0)
+    TopBar.BackgroundTransparency = 1
+    TopBar.Parent = Main
 
     AddDrag(Main, Sidebar)
+    AddDrag(Main, TopBar)
+    
+    -- Show/Hide Toggle
+    local WindowVisible = true
+    UserInputService.InputBegan:Connect(function(Input, Processed)
+        if not Processed and Input.KeyCode == Enum.KeyCode.LeftControl then
+            WindowVisible = not WindowVisible
+            Main.Visible = WindowVisible
+        end
+    end)
 
     local Window = {
         Tabs = {},
@@ -265,12 +290,16 @@ function Usagi:CreateWindow(Config)
         Page.Visible = false
         Page.ScrollBarThickness = 3
         Page.ScrollBarImageColor3 = Usagi.Theme.Accent
+        Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Page.Parent = Container
         
         local CanvasGroup = Instance.new("CanvasGroup")
-        CanvasGroup.Size = UDim2.new(1, 0, 1, 0)
+        CanvasGroup.Size = UDim2.new(1, -10, 0, 0) -- Subtract for padding/scrollbar
+        CanvasGroup.Position = UDim2.new(0, 5, 0, 0)
         CanvasGroup.BackgroundTransparency = 1
         CanvasGroup.GroupTransparency = 1
+        CanvasGroup.AutomaticSize = Enum.AutomaticSize.Y
         CanvasGroup.Parent = Page
         
         local PageList = Instance.new("UIListLayout")
