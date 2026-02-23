@@ -407,10 +407,7 @@ function Usagi:CreateWindow(Config)
             }):Play()
         end)
 
-        local Tab = {
-            Button = TabButton,
-            Page = Page
-        }
+        local Tab = {Button = TabButton, Page = Page}
         table.insert(Window.Tabs, Tab)
 
         if #Window.Tabs == 1 then
