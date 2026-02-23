@@ -406,12 +406,6 @@ function Usagi:CreateWindow(Config)
                 Position = UDim2.new(0, 5, 0, 0)
             }):Play()
         end)
-                Position = UDim2.new(0, 5, 0, 0)
-            }):Play()
-            
-            TabButton.BackgroundColor3 = Usagi.Theme.Accent
-            TabButton.UIStroke.Enabled = true
-        end)
 
         local Tab = {
             Button = TabButton,
