@@ -190,7 +190,7 @@ function Usagi:Loader(Config)
         ImageTransparency = 1
     }):Play()
     
-    -- Text pieces fly DOWN with rotation
+    -- Text pieces fly DOWN with rotation and bounce
     TweenService:Create(Upper, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
         Position = UDim2.new(-0.05, 0, 1.5, 0),
         Rotation = -15,
@@ -343,8 +343,13 @@ function Usagi:CreateWindow(Config)
         TabButton.TextSize = 13
         TabButton.TextColor3 = Usagi.Theme.Text
         TabButton.AutoButtonColor = false
+        TabButton.BackgroundTransparency = 1
+        TabButton.TextTransparency = 1
         TabButton.Parent = TabContainer
         
+        -- Modern fade-in and slide for tab button
+        TweenService:Create(TabButton, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+
         local TBCorner = Instance.new("UICorner")
         TBCorner.CornerRadius = UDim.new(0, 8)
         TBCorner.Parent = TabButton
@@ -429,8 +434,12 @@ function Usagi:CreateWindow(Config)
             Label.TextSize = 13
             Label.TextColor3 = Usagi.Theme.SecondaryText
             Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.TextTransparency = 1
             Label.Parent = Content
             
+            -- Modern fade-in
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+
             local Proxy = {Instance = Label}
             function Proxy:SetText(val) Label.Text = "  " .. tostring(val) end
             return Proxy
@@ -451,7 +460,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Accent
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = SectionFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Line = Instance.new("Frame")
             Line.Size = UDim2.new(1, 0, 0, 1)
@@ -470,8 +482,11 @@ function Usagi:CreateWindow(Config)
             local ParaFrame = Instance.new("Frame")
             ParaFrame.Size = UDim2.new(1, 0, 0, 60)
             ParaFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            ParaFrame.BackgroundTransparency = 1
             ParaFrame.Parent = Content
             
+            TweenService:Create(ParaFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local ParaCorner = Instance.new("UICorner")
             ParaCorner.CornerRadius = UDim.new(0, 10)
             ParaCorner.Parent = ParaFrame
@@ -485,7 +500,10 @@ function Usagi:CreateWindow(Config)
             TitleLabel.TextColor3 = Usagi.Theme.Text
             TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
             TitleLabel.BackgroundTransparency = 1
+            TitleLabel.TextTransparency = 1
             TitleLabel.Parent = ParaFrame
+
+            TweenService:Create(TitleLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local ContentLabel = Instance.new("TextLabel")
             ContentLabel.Size = UDim2.new(1, -20, 0, 0)
@@ -498,7 +516,10 @@ function Usagi:CreateWindow(Config)
             ContentLabel.TextWrapped = true
             ContentLabel.BackgroundTransparency = 1
             ContentLabel.AutomaticSize = Enum.AutomaticSize.Y
+            ContentLabel.TextTransparency = 1
             ContentLabel.Parent = ParaFrame
+
+            TweenService:Create(ContentLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             ParaFrame.AutomaticSize = Enum.AutomaticSize.Y
             
@@ -515,8 +536,16 @@ function Usagi:CreateWindow(Config)
             Button.TextColor3 = Usagi.Theme.Text
             Button.TextXAlignment = Enum.TextXAlignment.Left
             Button.AutoButtonColor = false
+            Button.BackgroundTransparency = 1
+            Button.TextTransparency = 1
             Button.Parent = Content
             
+            -- Modern fade-in and slight scale pop
+            local ButtonScale = Instance.new("UIScale", Button)
+            ButtonScale.Scale = 0.95
+            TweenService:Create(Button, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+            TweenService:Create(ButtonScale, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = 1}):Play()
+
             local BCorner = Instance.new("UICorner")
             BCorner.CornerRadius = UDim.new(0, 10)
             BCorner.Parent = Button
@@ -547,8 +576,11 @@ function Usagi:CreateWindow(Config)
             local ToggleFrame = Instance.new("Frame")
             ToggleFrame.Size = UDim2.new(1, 0, 0, 44)
             ToggleFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            ToggleFrame.BackgroundTransparency = 1
             ToggleFrame.Parent = Content
             
+            TweenService:Create(ToggleFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local TFCorner = Instance.new("UICorner")
             TFCorner.CornerRadius = UDim.new(0, 10)
             TFCorner.Parent = ToggleFrame
@@ -567,7 +599,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = ToggleFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Switch = Instance.new("TextButton")
             Switch.Size = UDim2.new(0, 44, 0, 24)
@@ -616,8 +651,11 @@ function Usagi:CreateWindow(Config)
             local BindFrame = Instance.new("Frame")
             BindFrame.Size = UDim2.new(1, 0, 0, 44)
             BindFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            BindFrame.BackgroundTransparency = 1
             BindFrame.Parent = Content
             
+            TweenService:Create(BindFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local BFCorner = Instance.new("UICorner")
             BFCorner.CornerRadius = UDim.new(0, 10)
             BFCorner.Parent = BindFrame
@@ -636,7 +674,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = BindFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local BindButton = Instance.new("TextButton")
             BindButton.Size = UDim2.new(0, 60, 0, 24)
@@ -681,8 +722,11 @@ function Usagi:CreateWindow(Config)
             local SliderFrame = Instance.new("Frame")
             SliderFrame.Size = UDim2.new(1, 0, 0, 60)
             SliderFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            SliderFrame.BackgroundTransparency = 1
             SliderFrame.Parent = Content
             
+            TweenService:Create(SliderFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local SFCorner = Instance.new("UICorner")
             SFCorner.CornerRadius = UDim.new(0, 10)
             SFCorner.Parent = SliderFrame
@@ -701,7 +745,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = SliderFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local ValueLabel = Instance.new("TextLabel")
             ValueLabel.Size = UDim2.new(0, 50, 0, 30)
@@ -712,7 +759,10 @@ function Usagi:CreateWindow(Config)
             ValueLabel.TextColor3 = Usagi.Theme.Accent
             ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
             ValueLabel.BackgroundTransparency = 1
+            ValueLabel.TextTransparency = 1
             ValueLabel.Parent = SliderFrame
+
+            TweenService:Create(ValueLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local SliderBar = Instance.new("TextButton")
             SliderBar.Size = UDim2.new(1, -24, 0, 7)
@@ -764,8 +814,11 @@ function Usagi:CreateWindow(Config)
             PickerFrame.Size = UDim2.new(1, 0, 0, 44)
             PickerFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
             PickerFrame.ClipsDescendants = true
+            PickerFrame.BackgroundTransparency = 1
             PickerFrame.Parent = Content
             
+            TweenService:Create(PickerFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local PFCorner = Instance.new("UICorner")
             PFCorner.CornerRadius = UDim.new(0, 10)
             PFCorner.Parent = PickerFrame
@@ -784,7 +837,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = PickerFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Display = Instance.new("Frame")
             Display.Size = UDim2.new(0, 24, 0, 24)
@@ -853,8 +909,11 @@ function Usagi:CreateWindow(Config)
             local BoxFrame = Instance.new("Frame")
             BoxFrame.Size = UDim2.new(1, 0, 0, 44)
             BoxFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            BoxFrame.BackgroundTransparency = 1
             BoxFrame.Parent = Content
             
+            TweenService:Create(BoxFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local BCorner = Instance.new("UICorner")
             BCorner.CornerRadius = UDim.new(0, 10)
             BCorner.Parent = BoxFrame
@@ -873,7 +932,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = BoxFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local TextBox = Instance.new("TextBox")
             TextBox.Size = UDim2.new(0.4, 0, 0, 26)
@@ -911,8 +973,11 @@ function Usagi:CreateWindow(Config)
             DropFrame.Size = UDim2.new(1, 0, 0, 44)
             DropFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
             DropFrame.ClipsDescendants = true
+            DropFrame.BackgroundTransparency = 1
             DropFrame.Parent = Content
             
+            TweenService:Create(DropFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local DCorner = Instance.new("UICorner")
             DCorner.CornerRadius = UDim.new(0, 10)
             DCorner.Parent = DropFrame
@@ -931,7 +996,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = DropFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Icon = Instance.new("ImageLabel")
             Icon.Size = UDim2.new(0, 20, 0, 20)
@@ -972,8 +1040,12 @@ function Usagi:CreateWindow(Config)
                 Item.Font = Enum.Font.Gotham
                 Item.TextSize = 13
                 Item.TextColor3 = Usagi.Theme.Text
+                Item.BackgroundTransparency = 1
+                Item.TextTransparency = 1
                 Item.Parent = Container
                 
+                TweenService:Create(Item, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+
                 local ICorner = Instance.new("UICorner")
                 ICorner.CornerRadius = UDim.new(0, 6)
                 ICorner.Parent = Item
@@ -1002,8 +1074,11 @@ function Usagi:CreateWindow(Config)
             local InputFrame = Instance.new("Frame")
             InputFrame.Size = UDim2.new(1, 0, 0, 44)
             InputFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            InputFrame.BackgroundTransparency = 1
             InputFrame.Parent = Content
             
+            TweenService:Create(InputFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local IFCorner = Instance.new("UICorner")
             IFCorner.CornerRadius = UDim.new(0, 10)
             IFCorner.Parent = InputFrame
@@ -1022,7 +1097,10 @@ function Usagi:CreateWindow(Config)
             Label.TextColor3 = Usagi.Theme.Text
             Label.TextXAlignment = Enum.TextXAlignment.Left
             Label.BackgroundTransparency = 1
+            Label.TextTransparency = 1
             Label.Parent = InputFrame
+
+            TweenService:Create(Label, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Box = Instance.new("TextBox")
             Box.Size = UDim2.new(0, 80, 0, 26)
@@ -1065,8 +1143,11 @@ function Usagi:CreateWindow(Config)
             local ListFrame = Instance.new("Frame")
             ListFrame.Size = UDim2.new(1, 0, 0, 150)
             ListFrame.BackgroundColor3 = Usagi.Theme.ElementBackground
+            ListFrame.BackgroundTransparency = 1
             ListFrame.Parent = Content
             
+            TweenService:Create(ListFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+
             local LFCorner = Instance.new("UICorner")
             LFCorner.CornerRadius = UDim.new(0, 10)
             LFCorner.Parent = ListFrame
@@ -1080,7 +1161,10 @@ function Usagi:CreateWindow(Config)
             Title.TextColor3 = Usagi.Theme.Accent
             Title.TextXAlignment = Enum.TextXAlignment.Left
             Title.BackgroundTransparency = 1
+            Title.TextTransparency = 1
             Title.Parent = ListFrame
+
+            TweenService:Create(Title, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
             local Scroll = Instance.new("ScrollingFrame")
             Scroll.Size = UDim2.new(1, -20, 1, -45)
@@ -1109,8 +1193,12 @@ function Usagi:CreateWindow(Config)
                     Btn.TextSize = 13
                     Btn.TextColor3 = Selection[item] and Usagi.Theme.TabActiveText or Usagi.Theme.Text
                     Btn.TextXAlignment = Enum.TextXAlignment.Left
+                    Btn.BackgroundTransparency = 1
+                    Btn.TextTransparency = 1
                     Btn.Parent = Scroll
                     
+                    TweenService:Create(Btn, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+
                     local BCorner = Instance.new("UICorner")
                     BCorner.CornerRadius = UDim.new(0, 4)
                     BCorner.Parent = Btn
@@ -1156,7 +1244,7 @@ function Usagi:Notify(Config)
     local Title = Config.Title or "Notification"
     local Content = Config.Content or "Successfully executed!"
     local Image = Config.Image or "rbxassetid://109406620346350"
-    local Sound = Config.Sound or 79918510646632
+    local Sound = Config.Sound or 126103905910381
     local Duration = Config.Duration or 5
 
     local NotifyGui = CoreGui:FindFirstChild("UsagiNotify")
@@ -1188,6 +1276,10 @@ function Usagi:Notify(Config)
     NotifyFrame.BackgroundColor3 = self.Theme.Background
     NotifyFrame.BackgroundTransparency = 0.1
     NotifyFrame.Parent = NotifyGui.NotifyContainer
+    
+    local NotifyScale = Instance.new("UIScale")
+    NotifyScale.Scale = 0.9
+    NotifyScale.Parent = NotifyFrame
     
     local NFCorner = Instance.new("UICorner")
     NFCorner.CornerRadius = UDim.new(0, 10)
@@ -1247,21 +1339,25 @@ function Usagi:Notify(Config)
         end)
     end
 
-    -- Animation: Kinetic Arriving
+    -- Animation: Modern Expo with scale pop
     NotifyFrame.Position = UDim2.new(1, 310, 0, 0)
     NotifyFrame.GroupTransparency = 1
     
-    local Arrival = TweenService:Create(NotifyFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    local ArrivalInfo = TweenInfo.new(0.6, Enum.EasingStyle.Expo, Enum.EasingDirection.Out)
+    local Arrival = TweenService:Create(NotifyFrame, ArrivalInfo, {
         Position = UDim2.new(0, 0, 0, 0),
         GroupTransparency = 0
     })
+    TweenService:Create(NotifyScale, ArrivalInfo, {Scale = 1}):Play()
     Arrival:Play()
     
     task.delay(Duration, function()
-        local Exit = TweenService:Create(NotifyFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        local ExitInfo = TweenInfo.new(0.6, Enum.EasingStyle.Expo, Enum.EasingDirection.In)
+        local Exit = TweenService:Create(NotifyFrame, ExitInfo, {
             Position = UDim2.new(1, 310, 0, 0),
             GroupTransparency = 1
         })
+        TweenService:Create(NotifyScale, ExitInfo, {Scale = 0.9}):Play()
         Exit:Play()
         Exit.Completed:Connect(function()
             NotifyFrame:Destroy()
